@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation, DoCheck, AfterContentInit, AfterContentChecked, OnDestroy,
-  AfterViewInit, AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
+  AfterViewInit, AfterViewChecked, ViewChild, ElementRef, ContentChild } from '@angular/core';
 
 @Component({
   selector: 'app-server-element',
@@ -16,6 +16,10 @@ AfterViewInit, AfterViewChecked, OnDestroy,
   @Input() name: string;
 
   @ViewChild('heading', {static: true}) header: ElementRef;
+
+
+
+  @ContentChild('contentParagraph', {static: true}) paragraph: ElementRef;
 
   ngOnChanges(changes: SimpleChanges) {
     console.log('ngOnChanges called');
@@ -38,6 +42,8 @@ AfterViewInit, AfterViewChecked, OnDestroy,
 
     console.log('textContent: ' + this.header.nativeElement.textContent);
     
+    console.log('Text content of paragraph: ' + this.paragraph.nativeElement.textContent);
+    
   }
 
   ngDoCheck (){
@@ -46,6 +52,10 @@ AfterViewInit, AfterViewChecked, OnDestroy,
 
   ngAfterContentInit() {
     console.log('ngAfterContentInit called');
+
+
+    console.log('Text content of paragraph: ' + this.paragraph.nativeElement.textContent);
+    
   }
 
   ngAfterViewInit() {
