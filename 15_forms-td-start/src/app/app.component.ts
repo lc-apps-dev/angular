@@ -58,6 +58,8 @@ export class AppComponent {
     this.user.answer = this.signupForm.value.questionAswer;
     this.user.gender = this.signupForm.value.gender;
     
+
+    this.signupForm.reset();
   }
 
 
