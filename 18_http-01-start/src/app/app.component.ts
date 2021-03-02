@@ -1,62 +1,61 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Post } from './post.model';
+import { PostsService } from './posts.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   loadedPosts: Post[] = [];
 
-  constructor(private http: HttpClient) {}
+  isFetchining = false;
+
+  error = null;
+
+  private errorSubject: Subscription;
+
+  constructor(private postsService: PostsService) {}
 
   ngOnInit() {
-    this.fetchPosts();
+
+    this.errorSubject = this.postsService.error.subscribe(errorMessage => {
+      this.error = errorMessage;
+    })
+    this.onFetchPosts();
+  }
+
+  ngOnDestroy(): void {
+    this.errorSubject.unsubscribe();
   }
 
   onCreatePost(postData: Post) {
-    // Send Http request
-    console.log(postData);
-    this.http.post<{name: string}>(
-      'https://ng-complete-guide-3894e-default-rtdb.europe-west1.firebasedatabase.app/posts.json', 
-      postData
-      ).subscribe(data => {
-        console.log(data);
-      });
-
+    this.postsService.createAndStorePost(postData.title, postData.content);
   }
 
   onFetchPosts() {
-    this.fetchPosts();
+    this.isFetchining = true;
+    this.postsService.fetchPosts().subscribe(data => {
+      this.isFetchining = false;
+      this.loadedPosts = data
+    }, 
+    error => {
+      this.isFetchining = false;
+      this.error = error.message;
+      console.log(error);
+    });
   }
 
   onClearPosts() {
-    // Send Http request
+    this.postsService.deletePosts().subscribe(() => {
+        this.loadedPosts = [];
+    });
   }
 
-  fetchPosts() {
-
-    this.http.get<{[key: string]: Post}>(
-      'https://ng-complete-guide-3894e-default-rtdb.europe-west1.firebasedatabase.app/posts.json'
-      )
-      .pipe(map(
-        (responseData: {[key: string]: Post}) => {
-          const postArray: Post[] = [];
-          for(const key in responseData) {
-            if(responseData.hasOwnProperty(key))
-              postArray.push({ ...responseData[key], id: key});
-          }
-
-          return postArray;
-        }
-
-      ))
-      
-      .subscribe(data => {
-        this.loadedPosts = data
-      });
+  onHandleError() {
+    this.error = null;
   }
+
 }
