@@ -14,15 +14,20 @@ export class RecipeService {
 
     constructor(private shoppingListService: ShoppingListService) {}
     
+
     private   recipes: Recipe[] = [
-        new Recipe('Tasty sznycel', 'This is a simply a test', 'https://www.eatwell101.com/wp-content/uploads/2019/08/tuscan-salmon-recipe.jpg', [
+        /*new Recipe('Tasty sznycel', 'This is a simply a test', 'https://www.eatwell101.com/wp-content/uploads/2019/08/tuscan-salmon-recipe.jpg', [
             new Ingredient('Meat' , 1), new Ingredient('French Fries' , 20)
         ]),
         new Recipe('Burger', 'This is a simple test', 'https://www.eatwell101.com/wp-content/uploads/2019/08/tuscan-salmon-recipe.jpg', [
             new Ingredient('Buns' , 2), new Ingredient('Meat' , 1)
-        ])
+        ])*/
       ]; 
 
+      setRecipes(recipes: Recipe []) {
+          this.recipes = recipes;
+          this.emitRecipesChanged();
+      }
 
     getRecipes() {
         return this.recipes.slice();
