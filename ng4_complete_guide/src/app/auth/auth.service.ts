@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { throwError } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { Subject, throwError } from "rxjs";
+import { catchError, tap } from "rxjs/operators";
+import { User } from "./user.model";
 
 
 export interface AuthResponseData {
@@ -19,6 +20,8 @@ export interface AuthResponseData {
 })
 export class AuthService {
 
+    userSub = new Subject<User>();
+
     constructor(private http: HttpClient) {}
 
     signup(email: string, password: string) {
@@ -28,7 +31,10 @@ export class AuthService {
                 password: password,
                 returnSecureToken: true
             }
-        ).pipe(catchError(this.handleError));
+        ).pipe(
+            catchError(this.handleError),
+            tap(this.handleAuthentication)
+        );
     }
 
     login(email: string, password: string) {
@@ -38,8 +44,20 @@ export class AuthService {
                 password: password,
                 returnSecureToken: true
             }
-        ).pipe(catchError(this.handleError));
+        ).pipe(
+            catchError(this.handleError),
+            tap(this.handleAuthentication)
+        );
     }
+
+
+    private handleAuthentication(data: AuthResponseData) {
+
+        const expirationDate = new Date(new Date().getTime() + (+data.expiresIn * 1000));
+        const user = new User(data.email, data.localId, data.idToken, expirationDate);
+        this.userSub.next(user);
+    }
+
 
     private handleError(errorRes: HttpErrorResponse) {
         let errorMessage = 'An unknown error occured';
