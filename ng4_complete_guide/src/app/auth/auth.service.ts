@@ -25,6 +25,8 @@ export class AuthService {
 
     constructor(private http: HttpClient, private router: Router) {}
 
+    private tokenExpirationTimer: any;
+
     signup(email: string, password: string) {
         return this.http.post<AuthResponseData>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC7s-rwEILCOFTqSRIAOC9ZVzaQFj0w8aA', 
             {
@@ -54,6 +56,19 @@ export class AuthService {
     logout() {
         this.userSub.next(null);
         this.router.navigate(['/auth']);
+        localStorage.removeItem('userData');
+
+        if(this.tokenExpirationTimer) {
+            clearTimeout(this.tokenExpirationTimer)
+        }
+        this.tokenExpirationTimer = null;
+    }
+
+    autoLogout(expirationduration: number) {
+
+        this.tokenExpirationTimer = setTimeout(() => {
+            this.logout();
+        }, expirationduration);
     }
 
     private handleAuthentication(data: AuthResponseData) {
@@ -61,6 +76,31 @@ export class AuthService {
         const expirationDate = new Date(new Date().getTime() + (+data.expiresIn * 1000));
         const user = new User(data.email, data.localId, data.idToken, expirationDate);
         this.userSub.next(user);
+        this.autoLogout(+data.expiresIn * 1000);
+        localStorage.setItem('userData', JSON.stringify(user));
+    }
+
+    autoLogin() {
+       const userData : {
+           email: string;
+           id: string;
+           _token: string;
+           _tokenExpirationDate: string;
+       } = JSON.parse(localStorage.getItem('userData'));
+       
+       if(!userData) {
+           console.log("No userData in local storage");
+           return;
+       }
+
+       const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+
+       if(loadedUser.token) {
+           this.userSub.next(loadedUser);
+
+           const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+           this.autoLogout(expirationDuration);
+       }
     }
 
 
