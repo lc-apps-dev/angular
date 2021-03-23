@@ -21,6 +21,7 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { AlertComponent } from './shared/alert/alert.component';
 import { PlaceholderDirective } from './shared/placeholder/placeholder.directive';
 import { ShoppingListModule } from './shopping-list/shopping-list.module';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -30,13 +31,9 @@ import { ShoppingListModule } from './shopping-list/shopping-list.module';
     RecipeListComponent,
     RecipeDetailComponent,
     RecipeItemComponent,
-    DropdownDirective,
     RecipeStartComponent,
     RecipeEditComponent,
-    AuthComponent,
-    LoadingSpinner,
-    AlertComponent,
-    PlaceholderDirective
+    AuthComponent
   ],
   imports: [
     ShoppingListModule,
@@ -44,7 +41,8 @@ import { ShoppingListModule } from './shopping-list/shopping-list.module';
     FormsModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    SharedModule
   ],
   providers: [
     ShoppingListService,  
