@@ -21,11 +21,7 @@ const appRoutes: Routes = [
             { path: ':id', component: RecipeDetailComponent, resolve:[RecipesResolverService] },
             { path: ':id/edit', component: RecipeEditComponent, resolve:[RecipesResolverService] },
         ] 
-    },
-
-   
-
-    { path: 'auth', component: AuthComponent },
+    }
 ];
 
 @NgModule({
