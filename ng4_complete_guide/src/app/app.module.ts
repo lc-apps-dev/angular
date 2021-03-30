@@ -8,6 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core.module';
 import { CommonModule } from '@angular/common';
+import { LoggingService } from './logging.service';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { CommonModule } from '@angular/common';
     CommonModule
   ],
   providers: [
+    LoggingService
   ],
   bootstrap: [AppComponent],
   //entryComponents: [AlertComponent]
